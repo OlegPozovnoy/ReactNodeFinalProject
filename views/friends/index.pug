@@ -1,0 +1,17 @@
+extends ../layouts/main.pug
+
+block content
+  .container
+    header
+      h1= title
+
+    div
+      table.table.table-striped
+        thead
+          tr
+            th Email
+        
+        tbody
+          each author in authors
+            tr
+              td= author.email

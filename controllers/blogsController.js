@@ -1,5 +1,68 @@
-const Blog = require('../models/blog');
+const Author = require("../models/author");
+const Blog = require("../models/blog");
 
+exports.index = (req, res) => {
+  req.isAuthenticated();
+
+  console.log("userid:" + req.session.userId);
+
+  Author.findOne({
+    _id: req.session.userId
+  })
+    .then(result => {
+      res.render("friends/index", {
+        authors: result.friendlist,
+        title: "Friends"
+      });
+    })
+    .catch(err => {
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect("/");
+    });
+};
+
+exports.addnewfriend = (req, res) => {
+  //req.isAuthenticated();
+  console.log("addnewfriend");
+  res.render("friends/new", {
+    title: "Add new friend"
+  });
+};
+
+exports.createfriend = (req, res) => {
+  Author.findById(req.session.userId, (err, author) => {
+    Author.findOne({ email: req.body.email }).then(friend => {
+      console.log("before modification");
+      console.log(friend);
+      console.log(author);
+      author.friendlist.push(friend);
+      author.save();
+      friend.friendlist.push(author);
+      friend.save();
+      // friend.friendlist.push(author);
+      console.log("After modification");
+      console.log(friend);
+      console.log(author);
+      res.redirect("/blogs");
+    });
+  });
+};
+
+//  var author = Author.findById(req.session.userId);
+//  var friend = Author.findOne({ email: req.body.email });
+/*
+  console.log(author);
+  console.log(friend);
+
+  if (author._id != friend._id) {
+    author.friendlist.push(friend);
+    friend.friendlist.push(author);
+  } else {
+    author.friendlist.push(friend);
+  }
+};
+*/
+/*
 exports.index = (req, res) => {
   req.isAuthenticated();
 
@@ -18,23 +81,24 @@ exports.index = (req, res) => {
       res.redirect('/');
     });
 };
-
+*/
 exports.drafts = (req, res) => {
   req.isAuthenticated();
 
   Blog.find({
-      author: req.session.userId
-    }).drafts()
-    .populate('author')
+    author: req.session.userId
+  })
+    .drafts()
+    .populate("author")
     .then(blogs => {
-      res.render('blogs/index', {
+      res.render("blogs/index", {
         blogs: blogs,
-        title: 'Drafts'
+        title: "Drafts"
       });
     })
     .catch(err => {
-      req.flash('error', `ERROR: ${err}`);
-      res.redirect('/');
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect("/");
     });
 };
 
@@ -42,18 +106,19 @@ exports.published = (req, res) => {
   req.isAuthenticated();
 
   Blog.find({
-      author: req.session.userId
-    }).published()
-    .populate('author')
+    author: req.session.userId
+  })
+    .published()
+    .populate("author")
     .then(blogs => {
-      res.render('blogs/index', {
+      res.render("blogs/index", {
         blogs: blogs,
-        title: 'Published'
+        title: "Published"
       });
     })
     .catch(err => {
-      req.flash('error', `ERROR: ${err}`);
-      res.redirect('/');
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect("/");
     });
 };
 
@@ -61,26 +126,26 @@ exports.show = (req, res) => {
   req.isAuthenticated();
 
   Blog.findOne({
-      _id: req.params.id,
-      author: req.session.userId
-    })
+    _id: req.params.id,
+    author: req.session.userId
+  })
     .then(blog => {
-      res.render('blogs/show', {
+      res.render("blogs/show", {
         blog: blog,
         title: blog.title
       });
     })
     .catch(err => {
-      req.flash('error', `ERROR: ${err}`);
-      res.redirect('/');
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect("/");
     });
 };
 
 exports.new = (req, res) => {
   req.isAuthenticated();
 
-  res.render('blogs/new', {
-    title: 'New Blog Post'
+  res.render("blogs/new", {
+    title: "New Blog Post"
   });
 };
 
@@ -88,18 +153,18 @@ exports.edit = (req, res) => {
   req.isAuthenticated();
 
   Blog.findOne({
-      _id: req.params.id,
-      author: req.session.userId
-    })
+    _id: req.params.id,
+    author: req.session.userId
+  })
     .then(blog => {
-      res.render('blogs/edit', {
+      res.render("blogs/edit", {
         blog: blog,
         title: blog.title
       });
     })
     .catch(err => {
-      req.flash('error', `ERROR: ${err}`);
-      res.redirect('/');
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect("/");
     });
 };
 
@@ -109,30 +174,34 @@ exports.create = (req, res) => {
   req.body.blog.author = req.session.userId;
   Blog.create(req.body.blog)
     .then(() => {
-      req.flash('success', 'New blog was created successfully.');
-      res.redirect('/blogs');
+      req.flash("success", "New blog was created successfully.");
+      res.redirect("/blogs");
     })
     .catch(err => {
-      req.flash('error', `ERROR: ${err}`);
-      res.redirect('/blogs/new');
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect("/blogs/new");
     });
 };
 
 exports.update = (req, res) => {
   req.isAuthenticated();
 
-  Blog.updateOne({
+  Blog.updateOne(
+    {
       _id: req.body.id,
       author: req.session.userId
-    }, req.body.blog, {
+    },
+    req.body.blog,
+    {
       runValidators: true
-    })
+    }
+  )
     .then(() => {
-      req.flash('success', 'The blog was updated successfully.');
+      req.flash("success", "The blog was updated successfully.");
       res.redirect(`/blogs/${req.body.id}`);
     })
     .catch(err => {
-      req.flash('error', `ERROR: ${err}`);
+      req.flash("error", `ERROR: ${err}`);
       res.redirect(`/blogs/${req.body.id}/edit`);
     });
 };
@@ -141,15 +210,15 @@ exports.destroy = (req, res) => {
   req.isAuthenticated();
 
   Blog.deleteOne({
-      _id: req.body.id,
-      author: req.session.userId
-    })
+    _id: req.body.id,
+    author: req.session.userId
+  })
     .then(() => {
-      req.flash('success', 'The blog was deleted successfully.');
-      res.redirect('/blogs');
+      req.flash("success", "The blog was deleted successfully.");
+      res.redirect("/blogs");
     })
     .catch(err => {
-      req.flash('error', `ERROR: ${err}`);
+      req.flash("error", `ERROR: ${err}`);
       res.redirect(`/blogs`);
     });
 };

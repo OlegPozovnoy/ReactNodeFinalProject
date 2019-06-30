@@ -1,40 +1,45 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const SALT_WORK_FACTOR = 10;
 
-const AuthorSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
-    required: true
+const AuthorSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: true
+    },
+    lastName: {
+      type: String,
+      required: true
+    },
+    email: {
+      type: String,
+      required: true
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    friendlist: [this]
   },
-  lastName: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true
-  },
-  password: {
-    type: String,
-    required: true
+  {
+    timestamps: true
   }
-}, {
-  timestamps: true
-});
+);
 
 // Virtual property
-AuthorSchema.virtual('passwordConfirmation')
+AuthorSchema.virtual("passwordConfirmation")
   .get(() => this.passwordConfirmation)
-  .set(value => this.passwordConfirmation = value);
+  .set(value => (this.passwordConfirmation = value));
 
 // Helper actions
 // Hashes the password using a salt key
-AuthorSchema.pre('save', function (next) {
+AuthorSchema.pre("save", function(next) {
   const author = this;
 
-  if (!author.isModified('password')) return next();
-  if (author.password !== author.passwordConfirmation) throw new Error('Your password must match the password confirmation.');
+  if (!author.isModified("password")) return next();
+  if (author.password !== author.passwordConfirmation)
+    throw new Error("Your password must match the password confirmation.");
 
   bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
     if (err) return next(err);
@@ -48,11 +53,11 @@ AuthorSchema.pre('save', function (next) {
 });
 
 // Authenticate our plain text password against our hashed password
-AuthorSchema.methods.authenticate = function (plainPassword, callback) {
+AuthorSchema.methods.authenticate = function(plainPassword, callback) {
   bcrypt.compare(plainPassword, this.password, (err, isMatch) => {
     if (err) return callback(err);
     callback(null, isMatch);
   });
 };
 
-module.exports = mongoose.model('Author', AuthorSchema);
+module.exports = mongoose.model("Author", AuthorSchema);

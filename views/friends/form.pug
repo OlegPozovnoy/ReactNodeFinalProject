@@ -1,0 +1,13 @@
+extends ../layouts/main.pug
+block content
+  .container
+    header
+      h1 Add a new friend
+
+    div
+      form(action="/blogs/addnewfriend", method = "POST")
+        .form-group
+          label Enter your friend's email 
+          input.form-control(name="email", required)
+        .form-group
+          button.btn.btn-dark(type="submit") Submit
