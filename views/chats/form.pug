@@ -6,6 +6,6 @@ block content
         .form-group
           label Chat's name 
           input.form-control(name="name",value=(chat) ? chat.name : null, required)
-          input(type="hidden", name="chat_id", value=chat.id)
+          input(type="hidden", name="chat_id", value=(chat)? chat.id: null)
         .form-group
           button.btn.btn-dark(type="submit") Submit
