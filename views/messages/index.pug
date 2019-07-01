@@ -16,7 +16,7 @@ block content
           input.form-control(name="email", required)
           input(type="hidden", name="chat_id", value=chat_id)
         .form-group
-          button.btn.btn-dark(type="submit") Submit
+          button.btn.btn-dark(type="submit") Add
     hr
     div
       table.table.table-striped
@@ -25,13 +25,25 @@ block content
             th Who?
             th Said what?
             th When?
+            th More
         
         tbody
           each message in messages
             tr
               td= message.author.email
-              td= message.content
+              if (message.status ==="visible")
+                td= message.content
+              else
+                td
               td= message.updatedAt
+              if (message.author.id === user_id)
+                td  
+                  form(action="/chats/messageupdate", method="POST")
+                    input(type="hidden", name="change[messageId]", value=message.id)
+                    input(type="hidden", name="change[chatId]", value=chat_id)
+                    input.btn.btn-link(type="submit", value=(message.status ==="visible") ? "delete":"restore")  
+              else
+                td
     hr
     div
       form(action="/chats/addnewmessage", method = "POST")
@@ -40,7 +52,7 @@ block content
           input.form-control(name="message[text]", required)
           input(type="hidden", name="message[chat_id]", value=chat_id)
         .form-group
-          button.btn.btn-dark(type="submit") Submit
+          button.btn.btn-dark(type="submit") Send
     hr
     div
       form(action="/chats/leavechat", method = "POST", onsubmit='return confirm("Are you sure?");')

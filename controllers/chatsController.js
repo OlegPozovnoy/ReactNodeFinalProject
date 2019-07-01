@@ -12,14 +12,28 @@ exports.new = (req, res) => {
 
 exports.create = (req, res) => {
   console.log("Create:");
+  console.log(req.body.chat_id);
   req.isAuthenticated();
 
-  let chat = new Chat({
-    name: req.body.name,
-    authors: [{ _id: req.session.userId }]
-  });
-  chat.save();
-  res.redirect("index");
+  let chat;
+  if (req.body.chat_id) {
+    Chat.findOne({ _id: req.body.chat_id }, (err, res) => {
+      console.log("HAHAHA");
+      console.log(res);
+      res.name = req.body.name;
+      res.authors = [{ _id: req.session.userId }];
+      res.save();
+    }).then(() => {
+      res.redirect("index");
+    });
+  } else {
+    chat = new Chat({
+      name: req.body.name,
+      authors: [{ _id: req.session.userId }]
+    });
+    chat.save();
+    res.redirect("index");
+  }
 };
 
 exports.index = (req, res) => {
@@ -74,7 +88,8 @@ exports.show = (req, res) => {
         authors: chat.authors,
         messages: chat.messages,
         chat_id: req.params.id,
-        name: chat.name
+        name: chat.name,
+        user_id: req.session.userId
       });
     });
 };
@@ -162,5 +177,40 @@ exports.leavechat = (req, res) => {
     .catch(err => {
       req.flash("error", `ERROR: ${err}`);
       res.redirect(`${req.body.chat_id}`);
+    });
+};
+
+exports.messageupdate = (req, res) => {
+  req.isAuthenticated();
+
+  console.log("Request");
+  console.log(req.body);
+
+  Message.findOne({ _id: req.body.change.messageId }, (err, res) => {
+    if (err) {
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect(`${req.body.chat_id}`);
+    }
+
+    if (res.status === "visible") res.status = "deleted";
+    else res.status = "visible";
+
+    res.save();
+    console.log(res);
+  }).then(() => {
+    res.redirect(`${req.body.change.chatId}`);
+  });
+};
+
+exports.edit = (req, res) => {
+  Chat.findById(req.params.id)
+    .then(chat => {
+      res.render("chats/edit", {
+        title: `Edit ${chat.name}`,
+        chat: chat
+      });
+    })
+    .catch(err => {
+      console.error(`ERROR: ${err}`);
     });
 };

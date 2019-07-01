@@ -18,6 +18,8 @@ block content
               td
                 a(href=`/chats/${chat._id}`)= chat.name
               td
+                a(href=`/chats/edit/${chat.id}`) edit
+                = ` | `
                 form.destroy(action="/chats/destroy", method="POST", onsubmit='return confirm("Are you sure???");')
                   input(type="hidden", name="id", value=chat.id)
                   input(type="submit", value="delete")
