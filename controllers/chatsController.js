@@ -87,19 +87,21 @@ exports.addnewmessage = (req, res) => {
 
   Chat.findOne({
     _id: req.body.message.chat_id
-  }).then(chat => {
-    let message = new Message({
-      content: req.body.message.text,
-      author: req.session.userId
+  })
+    .then(chat => {
+      let message = new Message({
+        content: req.body.message.text,
+        author: req.session.userId
+      });
+
+      message.save();
+
+      chat.messages.push(message);
+      chat.save();
+    })
+    .then(() => {
+      res.redirect(`${req.body.message.chat_id}`);
     });
-
-    message.save();
-
-    chat.messages.push(message);
-    chat.save();
-
-    res.redirect(`${req.body.message.chat_id}`);
-  });
 };
 
 exports.addnewparticipant = (req, res) => {
@@ -110,14 +112,55 @@ exports.addnewparticipant = (req, res) => {
 
   Chat.findOne({
     _id: req.body.chat_id
-  }).then(chat => {
-    Author.findOne({ email: req.body.email }, (err, res) => {
-      console.log("FindOne");
-      console.log(chat);
-      console.log(res);
-      chat.authors.addToSet(res);
-      chat.save();
+  })
+    .then(chat => {
+      Author.findOne({ email: req.body.email }, (err, res) => {
+        if (err) {
+          req.flash("error", `ERROR: ${err}`);
+          res.redirect(`${req.body.chat_id}`);
+        }
+
+        console.log("FindOne");
+        console.log(chat);
+        console.log(res);
+        chat.authors.addToSet(res);
+        chat.save();
+      }).then(() => {
+        res.redirect(`${req.body.chat_id}`);
+      });
+    })
+    .catch(err => {
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect(`${req.body.chat_id}`);
     });
-    res.redirect(`${req.body.chat_id}`);
-  });
+};
+
+exports.leavechat = (req, res) => {
+  req.isAuthenticated();
+
+  console.log("Request");
+  console.log(req.body);
+
+  Chat.findOne({
+    _id: req.body.leave.chat_id
+  })
+    .then(chat => {
+      Author.findOne({ _id: req.session.userId }, (err, res) => {
+        if (err) {
+          req.flash("error", `ERROR: ${err}`);
+          res.redirect(`${req.body.chat_id}`);
+        }
+        console.log("FindOne");
+        console.log(chat);
+        console.log(res);
+        chat.authors.pull(res);
+        chat.save();
+      }).then(() => {
+        res.redirect("index");
+      });
+    })
+    .catch(err => {
+      req.flash("error", `ERROR: ${err}`);
+      res.redirect(`${req.body.chat_id}`);
+    });
 };

@@ -11,6 +11,11 @@ const MessageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Author",
       required: true
+    },
+    status: {
+      type: String,
+      enum: ["visible", "deleted"],
+      default: "visible"
     }
   },
   {

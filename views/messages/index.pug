@@ -3,20 +3,21 @@ extends ../layouts/main.pug
 block content
   .container
     header
-      h1= "Chat: " + name
+      h3= "Chat: " + name
 
     div 
-      h3 Participants:
+      h6 Participants:
       each author in authors
         p=author.email
 
       form(action="/chats/addnewparticipant", method = "POST")
         .form-group
-          label Enter participant email 
+          label Add participant by email 
           input.form-control(name="email", required)
           input(type="hidden", name="chat_id", value=chat_id)
         .form-group
           button.btn.btn-dark(type="submit") Submit
+    hr
     div
       table.table.table-striped
         thead
@@ -31,6 +32,7 @@ block content
               td= message.author.email
               td= message.content
               td= message.updatedAt
+    hr
     div
       form(action="/chats/addnewmessage", method = "POST")
         .form-group
@@ -39,3 +41,10 @@ block content
           input(type="hidden", name="message[chat_id]", value=chat_id)
         .form-group
           button.btn.btn-dark(type="submit") Submit
+    hr
+    div
+      form(action="/chats/leavechat", method = "POST", onsubmit='return confirm("Are you sure?");')
+        .form-group
+          input(type="hidden", name="leave[chat_id]", value=chat_id)
+        .form-group
+          button.btn.btn-danger(type="submit") Leave Chat

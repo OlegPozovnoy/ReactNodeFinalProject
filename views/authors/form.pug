@@ -1,4 +1,4 @@
-form(action=(blog ? `/authors/update` : "/authors"), method="POST")
+form(action=("/authors"), method="POST")
   if author
     input(type="hidden", name="id", value=author.id)
 

@@ -9,4 +9,5 @@ router.post("/create", ChatsController.create);
 router.post("/destroy", ChatsController.destroy);
 router.post("/addnewmessage", ChatsController.addnewmessage);
 router.post("/addnewparticipant", ChatsController.addnewparticipant);
+router.post("/leavechat", ChatsController.leavechat);
 module.exports = router;
