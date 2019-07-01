@@ -5,9 +5,11 @@ const app = express();
 const blogsRoutes = require("./routes/blogs");
 const authorsRoutes = require("./routes/authors");
 const sessionsRoutes = require("./routes/sessions");
+const chatsRoutes = require("./routes/chats");
 
 // Register our Page Routes with our app
 app.use("/blogs", blogsRoutes);
+app.use("/chats", chatsRoutes);
 app.use("/authors", authorsRoutes);
 app.use("/", sessionsRoutes);
 

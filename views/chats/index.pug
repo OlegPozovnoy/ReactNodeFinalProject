@@ -1,0 +1,23 @@
+extends ../layouts/main.pug
+
+block content
+  .container
+    header
+      h1= title
+
+    div
+      table.table.table-striped
+        thead
+          tr
+            th Name
+            th Actions
+        
+        tbody
+          each chat in chats
+            tr
+              td
+                a(href=`/chats/${chat._id}`)= chat.name
+              td
+                form.destroy(action="/chats/destroy", method="POST", onsubmit='return confirm("Are you sure???");')
+                  input(type="hidden", name="id", value=chat.id)
+                  input(type="submit", value="delete")

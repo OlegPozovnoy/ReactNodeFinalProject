@@ -1,0 +1,13 @@
+extends ../layouts/main.pug
+block content
+  .container
+    header
+      h1 Add a new friend
+
+    div
+      form(action="/chats/create", method = "POST")
+        .form-group
+          label Enter the name of the chat 
+          input.form-control(name="name", required)
+        .form-group
+          button.btn.btn-dark(type="submit") Submit

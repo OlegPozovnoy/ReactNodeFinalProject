@@ -20,7 +20,13 @@ const AuthorSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    friendlist: [this]
+    friendlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Author",
+        required: true
+      }
+    ]
   },
   {
     timestamps: true
