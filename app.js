@@ -13,33 +13,11 @@ mongoose
   .catch(err => console.error(`ERROR: ${err}`));
 // End Mongoose
 
+// Our imported libraries
 const express = require("express");
-const path = require("path");
 
+// Assigning Express to an app contstant
 const app = express();
-
-// Our routes
-const routes = require("./routes.js");
-app.use("/", routes);
-
-// !!!Handles any requests that don't match the ones above
-//app.get("*", (req, res) => {
-//  res.sendFile(path.join(__dirname + "/client/build/index.html"));
-//});
-
-// Handles any requests that don't match the ones above
-const root = path.join(__dirname, "/client/build");
-app.use(express.static(root));
-app.use((req, res, next) => {
-  if (
-    req.method === "GET" &&
-    req.accepts("html") &&
-    !req.is("json") &&
-    !req.path.includes(".")
-  ) {
-    res.sendFile("index.html", { root });
-  } else next();
-});
 
 // Adding cookies and sessions support to our app
 const cookieParser = require("cookie-parser");
@@ -64,16 +42,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
-// Body Parser
-const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true
-  })
-);
-// End Parser
 
 // Our views path
 //app.set("views", path.join(__dirname, "views"));
@@ -124,5 +92,40 @@ app.use((req, res, next) => {
 });
 // End of our authentication helper
 
-const port = process.env.PORT || 5000;
+// This maintains our home path
+const path = require("path");
+// Body Parser
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
+// End Parser
+
+// Our routes
+const routes = require("./routes.js");
+app.use("/api", routes);
+
+// !!!Handles any requests that don't match the ones above
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+});
+
+// Handles any requests that don't match the ones above
+const root = path.join(__dirname, "/client/build");
+app.use(express.static(root));
+app.use((req, res, next) => {
+  if (
+    req.method === "GET" &&
+    req.accepts("html") &&
+    !req.is("json") &&
+    !req.path.includes(".")
+  ) {
+    res.sendFile("index.html", { root });
+  } else next();
+});
+
+const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`Listening on ${port}`));

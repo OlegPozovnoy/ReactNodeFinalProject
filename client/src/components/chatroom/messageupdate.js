@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import Axios from "axios";
 import Cookies from "js-cookie";
 
 function UpdateMessage(props) {
-  const [inputs, setInputs] = useState({});
-
   //console.log(Cookies.get("uid") == props.message_uid);
 
   function handleSubmit(event) {
@@ -24,7 +22,7 @@ function UpdateMessage(props) {
     <div className="participantForm">
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          {Cookies.get("uid") == props.message_uid ? (
+          {Cookies.get("uid") === props.message_uid ? (
             <button className="btn btn-link" type="submit">
               {props.message_status === "visible" ? "delete" : "restore"}
             </button>

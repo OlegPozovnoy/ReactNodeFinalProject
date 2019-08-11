@@ -4,11 +4,10 @@ import { Redirect } from "react-router-dom";
 import Cookies from "js-cookie";
 
 function SessionLogout() {
-  {
-    useEffect(() => {
-      Axios.post("/api/logout").then(res => Cookies.remove("uid"));
-    }, []);
-  }
+  useEffect(() => {
+    Axios.post("/api/logout").then(res => Cookies.remove("uid"));
+  }, []);
+
   return <Redirect to="/" />;
 }
 

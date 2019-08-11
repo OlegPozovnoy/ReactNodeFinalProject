@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Axios from "axios";
 
 class AddMessage extends React.Component {

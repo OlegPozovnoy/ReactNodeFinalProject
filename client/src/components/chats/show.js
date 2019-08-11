@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Axios from "axios";
 import AddParticipant from "../chatroom/addparticipant";
 import AddMessage from "../chatroom/addnewmessage";
@@ -17,7 +17,7 @@ class ChatsShow extends React.Component {
     console.log("mouunt");
 
     setInterval(() => {
-      this.state.counter = this.state.counter + 1;
+      this.setState({ counter: this.state.counter + 1 });
     }, 10000);
 
     Axios.get(`/api/chats/${this.props.match.params.id}`)
@@ -30,8 +30,8 @@ class ChatsShow extends React.Component {
 
   componentDidUpdate(prevState) {
     if (
-      this.state.toggle != prevState.toggle ||
-      this.state.counter != prevState.counter
+      this.state.toggle !== prevState.toggle ||
+      this.state.counter !== prevState.counter
     ) {
       //console.log(this.state);
       //console.log(prevState);
@@ -46,7 +46,7 @@ class ChatsShow extends React.Component {
 
   toggling() {
     console.log("toggling");
-    this.state.toggle = !this.state.toggle;
+    this.setState({ toggle: !this.state.toggle });
   }
 
   render() {
