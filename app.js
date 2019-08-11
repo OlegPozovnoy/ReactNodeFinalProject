@@ -18,6 +18,29 @@ const path = require("path");
 
 const app = express();
 
+// Our routes
+const routes = require("./routes.js");
+app.use("/", routes);
+
+// !!!Handles any requests that don't match the ones above
+//app.get("*", (req, res) => {
+//  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+//});
+
+// Handles any requests that don't match the ones above
+const root = path.join(__dirname, "/client/build");
+app.use(express.static(root));
+app.use((req, res, next) => {
+  if (
+    req.method === "GET" &&
+    req.accepts("html") &&
+    !req.is("json") &&
+    !req.path.includes(".")
+  ) {
+    res.sendFile("index.html", { root });
+  } else next();
+});
+
 // Adding cookies and sessions support to our app
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -101,29 +124,5 @@ app.use((req, res, next) => {
 });
 // End of our authentication helper
 
-// Our routes
-const routes = require("./routes.js");
-app.use("/", routes);
-
-// !!!Handles any requests that don't match the ones above
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/app/client/build/index.html"));
-});
-
-// Handles any requests that don't match the ones above
-/*
-const root = path.join(__dirname, "/client/build");
-app.use(express.static(root));
-app.use((req, res, next) => {
-  if (
-    req.method === "GET" &&
-    req.accepts("html") &&
-    !req.is("json") &&
-    !req.path.includes(".")
-  ) {
-    res.sendFile("index.html", { root });
-  } else next();
-});
-*/
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Listening on ${port}`));
