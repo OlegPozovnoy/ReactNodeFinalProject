@@ -11,58 +11,54 @@ exports.new = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  console.log("Create:");
-  console.log(req.body.chat_id);
-  req.isAuthenticated();
+  if (!req.isAuthenticated())
+    return res.status(401).send({ error: "User is not authenticated" });
 
-  let chat;
+  console.log("Create:");
+
   if (req.body.chat_id) {
     Chat.findOne({ _id: req.body.chat_id }, (err, res) => {
-      console.log("HAHAHA");
-      console.log(res);
+      console.log("updating chat for: ", req.body.chat_id);
+      console.log(res.body);
       res.name = req.body.name;
       res.authors = [{ _id: req.session.userId }];
       res.save();
-    }).then(() => {
-      res.redirect("index");
-    });
+    })
+      .then(() => res.status(201).send({ success: "Chat was updated" }))
+      .catch(err => res.status(400).send(err));
   } else {
-    chat = new Chat({
+    console.log("creating the chat for: ", req.session.userId);
+    Chat.create({
       name: req.body.name,
       authors: [{ _id: req.session.userId }]
-    });
-    chat.save();
-    res.redirect("index");
+    })
+      .then(() => res.status(201).send({ success: "Chat was created" }))
+      .catch(err => res.status(503).send(err));
   }
 };
 
 exports.index = (req, res) => {
-  req.isAuthenticated();
-  console.log(req.session.userId);
-  Chat.find({ authors: { $in: [req.session.userId] } }).then(chats => {
-    console.log("Result");
-    console.log(chats);
-    res.render("chats/index", {
-      chats: chats,
-      title: "Chat list"
-    });
-  });
+  console.log("chats.index:");
+  //req.isAuthenticated();
+  Chat.find({ authors: { $in: [req.session.userId] } })
+    .then(chats => {
+      console.log("Chatlist response", chats);
+      return res.json(chats);
+    })
+    .catch(err => res.status(503).send(err));
 };
 
 exports.destroy = (req, res) => {
-  req.isAuthenticated();
+  if (!req.isAuthenticated())
+    return res.status(401).send({ error: "User is not authenticated" });
+
+  console.log("Destroy:", req.body.id);
 
   Chat.deleteOne({
     _id: req.body.id
   })
-    .then(() => {
-      req.flash("success", "The chat was deleted successfully.");
-      res.redirect("/chats/index");
-    })
-    .catch(err => {
-      req.flash("error", `ERROR: ${err}`);
-      res.redirect(`/chats`);
-    });
+    .then(() => res.status(200).send({ success: "Deleted successfully." }))
+    .catch(err => res.status(503).send(err));
 };
 
 exports.show = (req, res) => {
@@ -82,26 +78,21 @@ exports.show = (req, res) => {
       populate: { path: "author" }
     })
     .then(chat => {
-      console.log(chat);
-
-      res.render("messages/index", {
-        authors: chat.authors,
-        messages: chat.messages,
-        chat_id: req.params.id,
-        name: chat.name,
-        user_id: req.session.userId
-      });
-    });
+      console.log("Chatlist response", chat);
+      return res.json(chat);
+    })
+    .catch(err => res.status(503).send(err));
 };
 
 exports.addnewmessage = (req, res) => {
-  req.isAuthenticated();
+  if (!req.isAuthenticated())
+    return res.status(401).send({ error: "User is not authenticated" });
 
-  console.log("Request");
-  console.log(req.body);
+  console.log("Request", req.body);
+  console.log("chat_id", req.body.chat_id);
 
   Chat.findOne({
-    _id: req.body.message.chat_id
+    _id: req.body.chat_id
   })
     .then(chat => {
       let message = new Message({
@@ -114,13 +105,15 @@ exports.addnewmessage = (req, res) => {
       chat.messages.push(message);
       chat.save();
     })
-    .then(() => {
-      res.redirect(`${req.body.message.chat_id}`);
-    });
+    .then(() =>
+      res.status(201).send({ success: "Message added successfully." })
+    )
+    .catch(err => res.status(503).send(err));
 };
 
 exports.addnewparticipant = (req, res) => {
-  req.isAuthenticated();
+  if (!req.isAuthenticated())
+    return res.status(401).send({ error: "User is not authenticated" });
 
   console.log("Request");
   console.log(req.body);
@@ -129,29 +122,25 @@ exports.addnewparticipant = (req, res) => {
     _id: req.body.chat_id
   })
     .then(chat => {
+      console.log("chat to modify", chat);
       Author.findOne({ email: req.body.email }, (err, res) => {
-        if (err) {
-          req.flash("error", `ERROR: ${err}`);
-          res.redirect(`${req.body.chat_id}`);
-        }
-
+        console.log("email:", req.body.email);
         console.log("FindOne");
         console.log(chat);
         console.log(res);
         chat.authors.addToSet(res);
         chat.save();
-      }).then(() => {
-        res.redirect(`${req.body.chat_id}`);
-      });
+      }).catch(err => res.status(503).send(err));
     })
-    .catch(err => {
-      req.flash("error", `ERROR: ${err}`);
-      res.redirect(`${req.body.chat_id}`);
-    });
+    .then(() =>
+      res.status(201).send({ success: "New participant added successfully." })
+    )
+    .catch(err => res.status(503).send(err));
 };
 
 exports.leavechat = (req, res) => {
-  req.isAuthenticated();
+  if (!req.isAuthenticated())
+    return res.status(401).send({ error: "User is not authenticated" });
 
   console.log("Request");
   console.log(req.body);
@@ -171,13 +160,10 @@ exports.leavechat = (req, res) => {
         chat.authors.pull(res);
         chat.save();
       }).then(() => {
-        res.redirect("index");
+        res.status(201).send({ success: "You've left the chat." });
       });
     })
-    .catch(err => {
-      req.flash("error", `ERROR: ${err}`);
-      res.redirect(`${req.body.chat_id}`);
-    });
+    .catch(err => res.status(503).send(err));
 };
 
 exports.messageupdate = (req, res) => {
