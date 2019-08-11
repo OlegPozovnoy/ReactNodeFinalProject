@@ -106,8 +106,22 @@ const routes = require("./routes.js");
 app.use("/", routes);
 
 // !!!Handles any requests that don't match the ones above
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+//app.get("*", (req, res) => {
+//  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+//});
+
+// Handles any requests that don't match the ones above
+const root = path.join(__dirname, "/client/build");
+app.use(express.static(root));
+app.use((req, res, next) => {
+  if (
+    req.method === "GET" &&
+    req.accepts("html") &&
+    !req.is("json") &&
+    !req.path.includes(".")
+  ) {
+    res.sendFile("index.html", { root });
+  } else next();
 });
 
 const port = process.env.PORT || 5000;
