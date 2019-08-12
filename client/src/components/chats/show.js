@@ -8,13 +8,13 @@ import LeaveChat from "../chatroom/leavechat";
 class ChatsShow extends React.Component {
   constructor() {
     super();
-    console.log("Constructoro");
+    //console.log("Constructoro");
     this.state = { toggle: true, counter: 0 };
     this.toggling = this.toggling.bind(this);
   }
 
   componentDidMount() {
-    console.log("mouunt");
+    //  console.log("mouunt");
 
     setInterval(() => {
       this.setState({ counter: this.state.counter + 1 });
@@ -49,27 +49,56 @@ class ChatsShow extends React.Component {
     this.setState({ toggle: !this.state.toggle });
   }
 
+  convertDate(dateISO) {
+    return new Date(dateISO).toLocaleString();
+    //date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() +" "+date.get;
+  }
+
+  convertColor(nickname) {
+    var sum = 0;
+    for (var i = 0; i < nickname.length; i++) {
+      sum += nickname.charCodeAt(i);
+    }
+    //  console.log(nickname, sum);
+
+    if (sum % 7 === 0) return "red";
+    if (sum % 7 === 1) return "cyan";
+    if (sum % 7 === 2) return "lightblue";
+    if (sum % 7 === 3) return "yellow";
+    if (sum % 7 === 4) return "lime";
+    if (sum % 7 === 5) return "magenta";
+    if (sum % 7 === 6) return "orange";
+  }
+
   render() {
     //  console.log("render");
     return (
       <div className="container">
         <header>
-          <h3>Chat: {this.state.chat && this.state.chat.name}</h3>
+          <h3 className="chatname">
+            Chat: {this.state.chat && this.state.chat.name}
+          </h3>
         </header>
-
-        <div>
-          <h6>Participants:</h6>
-          <ul className="authorslist">
-            {Array.isArray(this.state.chat && this.state.chat.authors) &&
-              this.state.chat.authors.map(author => (
-                <li key={author._id}> {author.email}</li>
-              ))}
-          </ul>
-        </div>
         <AddParticipant
           chat_id={this.state.chat && this.state.chat._id}
           toggler={this.toggling}
         />
+        <div className="authorslist">
+          <h6 className="participantlist">Participants:</h6>
+          <ul>
+            {Array.isArray(this.state.chat && this.state.chat.authors) &&
+              this.state.chat.authors.map(author => (
+                <li
+                  key={author._id}
+                  style={{ color: this.convertColor(author.email) }}
+                >
+                  {" "}
+                  {author.email}
+                </li>
+              ))}
+          </ul>
+        </div>
+
         <div>
           <table className="table table-striped  table-dark">
             <thead>
@@ -77,17 +106,20 @@ class ChatsShow extends React.Component {
                 <th> Who?</th>
                 <th> Said what?</th>
                 <th> When?</th>
-                <th> More</th>
+                <th> </th>
               </tr>
             </thead>
             <tbody>
               {Array.isArray(this.state.chat && this.state.chat.messages) &&
                 this.state.chat.messages.map(message => (
-                  <tr key={message._id}>
+                  <tr
+                    key={message._id}
+                    style={{ color: this.convertColor(message.author.email) }}
+                  >
                     <td>{message.author.email}</td>
                     <td>{message.status === "visible" && message.content}</td>
-                    <td>{message.updatedAt}</td>
-                    <td>
+                    <td>{this.convertDate(message.createdAt)}</td>
+                    <td className="text-right">
                       <UpdateMessage
                         chat_id={this.state.chat._id}
                         message_id={message._id}

@@ -32,7 +32,7 @@ function SessionRegister() {
   return (
     <div className="container">
       <header>
-        <h1>New Author</h1>
+        <h1>New User</h1>
       </header>
       <div>
         <form onSubmit={handleSubmit}>
@@ -57,7 +57,7 @@ function SessionRegister() {
           </div>
 
           <div className="form-group">
-            <label>Email</label>
+            <label>Nickname</label>
             <input
               className="form-control"
               name="email"

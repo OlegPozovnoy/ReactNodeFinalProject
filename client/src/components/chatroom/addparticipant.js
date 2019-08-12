@@ -37,7 +37,7 @@ class AddParticipant extends React.Component {
       <div className="participantForm">
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
-            <label>Add participant by email</label>
+            <label>Add a new participant by nickname</label>
             <input
               className="form-control"
               name="email"

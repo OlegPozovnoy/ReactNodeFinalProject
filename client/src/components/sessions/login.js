@@ -41,7 +41,7 @@ function SessionLogin() {
       <div>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
+            <label>Nickname</label>
             <input
               className="form-control"
               name="email"
