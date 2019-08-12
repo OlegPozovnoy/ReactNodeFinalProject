@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 
 function SessionLogout() {
   useEffect(() => {
-    Axios.post("/api/logout").then(res => Cookies.remove("uid"));
+    Axios.post("/api/logout").then(() => Cookies.remove("uid"));
   }, []);
 
   return <Redirect to="/" />;

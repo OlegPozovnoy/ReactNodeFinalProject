@@ -52,6 +52,7 @@ exports.logout = (req, res) => {
     req.session.userId = null;
     res
       .clearCookie("token")
+      .clearCookie("uid")
       .status(200)
       .send({ success: "You are now logged out" });
   }
