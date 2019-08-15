@@ -19,7 +19,7 @@ function SessionLogin() {
           return {
             ...notificatoin,
             status: "success",
-            message: resp.data.message
+            message: "You were logged in"
           };
         });
         console.log(resp);

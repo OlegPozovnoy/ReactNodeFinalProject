@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import Axios from "axios";
+import NotificationContext from "../notification_context";
 
 function SessionRegister() {
   const [inputs, setInputs] = useState({});
   const [redirect, setRedirect] = useState(false);
+  const { setNotification } = useContext(NotificationContext);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -13,8 +15,27 @@ function SessionRegister() {
     Axios.post("/api/authors", {
       author: inputs
     })
-      .then(resp => setRedirect(true))
-      .catch(err => console.log(err));
+      .then(resp => {
+        console.log("resp", resp);
+        setNotification(notificatoin => {
+          return {
+            ...notificatoin,
+            status: resp.data.status,
+            message: resp.data.message
+          };
+        });
+        setRedirect(true);
+      })
+      .catch(err => {
+        setNotification(notificatoin => {
+          return {
+            ...notificatoin,
+            status: "danger",
+            message: "Registration failed"
+          };
+        });
+        console.log(err);
+      });
   }
 
   function handleInputChange(event) {
@@ -25,6 +46,24 @@ function SessionRegister() {
       inputs[name] = value;
       return inputs;
     });
+
+    console.log("posting", inputs);
+    inputs.email &&
+      inputs.email.length > 0 &&
+      Axios.post("/api/authors/checkusername", {
+        author: inputs
+      })
+        .then(result => {
+          console.log("result status", result.data.status);
+          setNotification(notificatoin => {
+            return {
+              ...notificatoin,
+              status: result.data.status,
+              message: result.data.message + " (" + inputs.email + ")"
+            };
+          });
+        })
+        .catch(err => console.error(err));
   }
 
   if (redirect) return <Redirect to="/" />;
