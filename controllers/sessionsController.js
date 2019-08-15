@@ -27,7 +27,7 @@ exports.authenticate = (req, res) => {
             .cookie("token", token, { httpOnly: true })
             .status(201)
             .send({
-              success: "You were authenticated you wonderful human.",
+              message: "You were authenticated you wonderful human.",
               uid: author.id
             });
         } else {

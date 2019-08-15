@@ -19,17 +19,6 @@ function Routes() {
       <Route exact path="/chats/:id" component={ChatsShow} />
       <Route exact path="/chats/edit/:id" component={ChatsEdit} />
       <Route exact path="/chats/destroy/:id" component={ChatsDestroy} />
-
-      {/*
-      <Route exact path="/chats/addnewmessage" component={ChatsAddnewmessage} />
-      <Route
-        exact
-        path="/chats/addnewparticipant"
-        component={ChatsAddnewparticipant}
-      />
-      <Route exact path="/chats/leavechat" component={ChatsLeavechat} />
-      <Route exact path="/chats/messageupdate" component={ChatsMessageupdate} />
-*/}
       <Route exact path="/" component={SessionLogin} />
       <Route exact path="/logout" component={SessionLogout} />
       <Route exact path="/authors/new" component={SessionRegister} />

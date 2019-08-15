@@ -99,7 +99,7 @@ class ChatsShow extends React.Component {
           </ul>
         </div>
 
-        <div>
+        <div className="my-custom-scrollbar table-wrapper-scroll-y">
           <table className="table table-striped  table-dark">
             <thead>
               <tr>

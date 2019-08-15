@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import Axios from "axios";
 import Cookies from "js-cookie";
+import NotificationContext from "../notification_context";
 
 function SessionLogin() {
   const [inputs, setInputs] = useState({});
   const [redirect, setRedirect] = useState(false);
-
+  const { setNotification } = useContext(NotificationContext);
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -14,11 +15,27 @@ function SessionLogin() {
 
     Axios.post("/api/authenticate", inputs)
       .then(resp => {
+        setNotification(notificatoin => {
+          return {
+            ...notificatoin,
+            status: "success",
+            message: resp.data.message
+          };
+        });
         console.log(resp);
         Cookies.set("uid", resp.data.uid);
         setRedirect(true);
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        setNotification(notificatoin => {
+          return {
+            ...notificatoin,
+            status: "danger",
+            message: "Error while logging in"
+          };
+        });
+        console.log(err);
+      });
   }
 
   function handleInputChange(event) {
