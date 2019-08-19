@@ -11,7 +11,7 @@ function SessionLogin() {
   function handleSubmit(event) {
     event.preventDefault();
 
-    console.log("Login: ", inputs);
+    //console.log("Login: ", inputs);
 
     Axios.post("/api/authenticate", inputs)
       .then(resp => {
@@ -22,7 +22,7 @@ function SessionLogin() {
             message: "You were logged in"
           };
         });
-        console.log(resp);
+        //console.log(resp);
         Cookies.set("uid", resp.data.uid);
         setRedirect(true);
       })
@@ -34,7 +34,7 @@ function SessionLogin() {
             message: "Error while logging in"
           };
         });
-        console.log(err);
+        //console.log(err);
       });
   }
 

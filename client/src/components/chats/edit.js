@@ -6,16 +6,16 @@ function ChatsEdit(props) {
   const [inputs, setInputs] = useState({});
   const [redirect, setRedirect] = useState(false);
 
-  console.log("inputs:", inputs);
-  console.log("edit props:", props);
+  //console.log("inputs:", inputs);
+  //console.log("edit props:", props);
 
   useEffect(() => {
-    console.log("effects triggered");
-    console.log("path:", props.match.params.id);
-    console.log("inputs:", inputs);
+    //console.log("effects triggered");
+    //console.log("path:", props.match.params.id);
+    //console.log("inputs:", inputs);
     Axios.get(`/api/chats/${props.match.params.id}`)
       .then(result => {
-        console.log("edit result", result);
+        //console.log("edit result", result);
         setInputs(result.data);
       })
       .catch(err => console.error(err));
@@ -23,7 +23,7 @@ function ChatsEdit(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log("submitting edit", props.match.params.id, inputs.name);
+    //console.log("submitting edit", props.match.params.id, inputs.name);
     Axios.post("/api/chats/create", {
       chat_id: props.match.params.id,
       name: inputs.name

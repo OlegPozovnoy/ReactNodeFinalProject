@@ -10,13 +10,13 @@ function SessionRegister() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log("Register inputs: ", inputs);
+    //console.log("Register inputs: ", inputs);
 
     Axios.post("/api/authors", {
       author: inputs
     })
       .then(resp => {
-        console.log("resp", resp);
+        //console.log("resp", resp);
         setNotification(notificatoin => {
           return {
             ...notificatoin,
@@ -34,7 +34,7 @@ function SessionRegister() {
             message: "Registration failed"
           };
         });
-        console.log(err);
+        //console.log(err);
       });
   }
 
@@ -47,14 +47,14 @@ function SessionRegister() {
       return inputs;
     });
 
-    console.log("posting", inputs);
+    //console.log("posting", inputs);
     inputs.email &&
       inputs.email.length > 0 &&
       Axios.post("/api/authors/checkusername", {
         author: inputs
       })
         .then(result => {
-          console.log("result status", result.data.status);
+          //console.log("result status", result.data.status);
           setNotification(notificatoin => {
             return {
               ...notificatoin,

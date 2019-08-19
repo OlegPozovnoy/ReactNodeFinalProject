@@ -13,8 +13,8 @@ class AddParticipant extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    console.log("props", this.props);
-    console.log("state", this.state);
+    //console.log("props", this.props);
+    //console.log("state", this.state);
 
     Axios.post("/api/chats/addnewparticipant", {
       chat_id: this.props.chat_id,
@@ -29,7 +29,7 @@ class AddParticipant extends React.Component {
     event.persist();
 
     this.setState({ value: event.target.value });
-    console.log(this.state.value);
+    //console.log(this.state.value);
   }
 
   render() {

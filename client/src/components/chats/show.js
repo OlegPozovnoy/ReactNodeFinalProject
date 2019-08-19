@@ -45,7 +45,7 @@ class ChatsShow extends React.Component {
   }
 
   toggling() {
-    console.log("toggling");
+    //console.log("toggling");
     this.setState({ toggle: !this.state.toggle });
   }
 
